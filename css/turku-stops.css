@@ -40,6 +40,14 @@ body {
 }
 
 #map {
+	-moz-transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;  
+
+}
+
+.map {
 	position: absolute;
 	top: 0px;
 	left:0px;
@@ -50,12 +58,18 @@ body {
 	z-index:1;
 }
 
+.map_collapse {
+	height: 30%;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+}
+
 #drawer {
 	-moz-transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;  
-
 	padding: 10px 20px;
 }
 
@@ -70,9 +84,6 @@ body {
 	height: 100px;
 	background: #fff;
 	border-top: 3px solid rgba(50,50,50,.2);
-
-
-
 }
 
 

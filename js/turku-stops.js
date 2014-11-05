@@ -43,14 +43,28 @@ Stops.prototype.isDrawerOpen = function() {
 
 Stops.prototype.toggleDrawer = function() {
 	var self = this;
+	//collapse drawer
 	if(self.isDrawerOpen()) {
 		$('#drawer').removeClass('drawer_open');
+		$('#map').removeClass('map_collapse');
+
 	}
+	// expand drawer
 	else {
 		$('#drawer').addClass('drawer_open');
+		$('#map').addClass('map_collapse');
 	}
 
+	setTimeout(function() {
+		self.map.invalidateSize();
+
+		self.map.panTo(self.lastPosition);
+		console.log("hep");
+		console.log(self.map.getSize());
+	}, 200);
+
 }
+
 
 Stops.prototype.onMapClick = function(e) {
 	var self=this;
