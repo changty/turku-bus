@@ -57,10 +57,8 @@ Stops.prototype.toggleDrawer = function() {
 
 	setTimeout(function() {
 		self.map.invalidateSize();
-
-		self.map.panTo(self.lastPosition);
-		console.log("hep");
-		console.log(self.map.getSize());
+		// change last position to last clicked bus stop ?
+		self.map.panTo(self.lastPosition, {animate: true, duration: 1.0});
 	}, 200);
 
 }
