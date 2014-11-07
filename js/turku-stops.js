@@ -10,7 +10,7 @@ Stops = function(place, config, translation) {
 	// add attr OpenStreetMap tile layer
 	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 	    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-	    maxZoom: 16
+	    maxZoom: 19
 	}).addTo(this.map);
 
 	this.lastPosition = new L.LatLng(60.451667, 22.266944);
@@ -20,7 +20,7 @@ Stops = function(place, config, translation) {
 	this.accuracy = -1;
 
 	this.map.setView(new L.LatLng(60.451667, 22.266944),16);
-	this.map.locate({setView: false, maxZoom: 18, watch: true});
+	this.map.locate({setView: false, maxZoom: 19, watch: true});
 	
 	this.map.on('locationfound', this.onLocationFound.bind(this));
 	this.map.on('locationerror', this.onLocationError.bind(this));
