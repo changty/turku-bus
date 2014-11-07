@@ -5,6 +5,9 @@ Stops = function(place, config, translation) {
 	this.firstLocation = true;
 	this.cachedStops = [];
 
+	// remember which stop was last viewed 
+	this.selectedStop = null; 
+
 	this.stopsLayer = null;
 
 	// add attr OpenStreetMap tile layer
@@ -15,8 +18,8 @@ Stops = function(place, config, translation) {
 
 	this.lastPosition = new L.LatLng(60.451667, 22.266944);
 
-	this.user = L.marker(this.lastPosition).addTo(this.map);
-	this.userCircle = L.circle(this.lastPosition, 50).addTo(this.map);
+	this.user = L.userMarker(this.lastPosition).addTo(this.map);
+	// this.userCircle = L.circle(this.lastPosition, 50).addTo(this.map);
 	this.accuracy = -1;
 
 	this.map.setView(new L.LatLng(60.451667, 22.266944),16);
@@ -27,6 +30,8 @@ Stops = function(place, config, translation) {
 	this.map.on('click', this.onMapClick.bind(this));
 	this.map.on('moveend', this.onMoveEnd.bind(this));
 
+	// get stops for new view
+	this.onMoveEnd();
 
 	// events
 	$('.expand').click(function() {
@@ -38,10 +43,6 @@ Stops = function(place, config, translation) {
 			self.toggleDrawer();
 		}
 	});
-
-	$('.coordtest').click(function() {
-   })
-
 
 }
 
@@ -91,7 +92,10 @@ Stops.prototype.onMoveEnd = function(e) {
 					stop.bindPopup('<span class="lato-text"><b>' + item['stop_name'] + '</b> ('+ item['stop_code'] + ')</span>');
 
 					stop.on('click', function(e) {
-						console.log(item);
+						self.map.setView(new L.LatLng(stop.lat, stop.lon), 17);
+						self.openStop(stop);
+						
+						self.selectedStop = stop;
 						// setLineNumbers(data['stop_id'], data['stop_name']);
 		   	// 			getCurrTime(data['stop_id']);
 
@@ -121,8 +125,68 @@ Stops.prototype.onMoveEnd = function(e) {
     });
 }
 
+Stops.prototype.openStop = function(stop) {
+	var self = this;
+
+	$('.masterheader').html('<i class="fa fa-clock-o"></i> <strong> 3 min </strong> <i class="spacing-left yellow fa fa-bus"></i> 32 <span class="spacing-left"></span> kauppatorille'); 
+
+	$('.subheader').html('<i class="fa fa-flag-o"></i> ' + stop.name);
+
+
+	self.expandDrawer();
+
+	$.ajax({
+		url: '/api/stop',
+		data: {stop: stop.code},
+		type: 'GET',
+
+		success: function(data) {
+			console.log(data);
+		},	
+		error: function(err) {
+			console.log("Error getting stop info: ", err);
+		}
+	});
+}
+
+
+Stops.prototype.resizeCallback = function() {
+	var self = this;
+	setTimeout(function() {
+		self.map.invalidateSize();
+		// change last position to last clicked bus stop ?
+		//use panBy instead!
+		var lastPos = new L.LatLng(self.selectedStop.lat, self.selectedStop.lon); 
+		self.map.panTo(lastPos, {animate: true, duration: 0.1});
+	}, 200);
+}
+
 Stops.prototype.isDrawerOpen = function() {
 	return $('#drawer').hasClass('drawer_open');
+}
+
+Stops.prototype.collapseDrawer = function() {
+	var self = this;
+	//collapse drawer
+	if(self.isDrawerOpen()) {
+		$('#drawer').removeClass('drawer_open');
+		$('#map').removeClass('map_collapse');
+
+	}
+
+	self.resizeCallback();
+}
+
+Stops.prototype.expandDrawer = function() {
+	var self = this;
+
+	if(!self.isDrawerOpen()) {
+		$('#drawer').addClass('drawer_open');
+		$('#map').addClass('map_collapse');
+	}
+
+	self.resizeCallback();
+
 }
 
 Stops.prototype.toggleDrawer = function() {
@@ -139,13 +203,7 @@ Stops.prototype.toggleDrawer = function() {
 		$('#map').addClass('map_collapse');
 	}
 
-	setTimeout(function() {
-		self.map.invalidateSize();
-		// change last position to last clicked bus stop ?
-		//use panBy instead!
-		self.map.panTo(self.lastPosition, {animate: true, duration: 0.1});
-	}, 200);
-
+	self.resizeCallback();
 }
 
 
@@ -178,11 +236,12 @@ Stops.prototype.onLocationFound = function(e) {
 	var place = [e.latlng.lat, e.latlng.lng];
 
 	// Please don't open popup automatically, because this messes up moving on the map.
-	self.user.bindPopup('Tarkkuus: ' + radius + ' m'); //.openPopup();
+	// self.user.bindPopup('Tarkkuus: ' + radius + ' m'); //.openPopup();
 	self.lastPosition = e.latlng;
 	self.user.setLatLng(self.lastPosition);
-	self.userCircle.setLatLng(self.lastPosition);
+	// self.userCircle.setLatLng(self.lastPosition);
 	self.accuracy = radius;
+	self.user.setAccuracy(radius);
 
 	if(self.firstLocation) {
 		self.map.setView(e.latlng, self.map.getZoom());

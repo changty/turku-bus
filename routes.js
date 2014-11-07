@@ -34,12 +34,28 @@ module.exports = function(router) {
 								return;
 							}
 							else {
-								console.log(stops)
-								console.log(stops.length);
+								// console.log(stops)
+								console.log("pysäkkien määrä: ", stops.length);
 								res.json(stops);
 							}
 					});
 
+	});
+
+	router.get('/stop', function(req, res) {
+		var stop_code = req.param('stop');
+		console.log("stop:", stop_code);
+		Stop.findOne({'stop_code': stop_code}, 
+			function (err, stop) {
+				if(err) {
+					console.log("error getting stop ", err);
+					res.send("error");
+				}
+				else {
+					console.log("pysäkki:", stop);
+					res.json(stop);
+				}
+			});
 	});
 
 };
