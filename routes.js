@@ -4,13 +4,13 @@ var Stop 			= require('./models/stop');
 
 mongoose.connect('mongodb://localhost/' + config.db); 
 
-module.exports = function(app) {
+module.exports = function(router) {
 
-	app.get('/', function(req, res) {
+	router.get('/', function(req, res) {
   		res.send("Hello world!");
 	});
 
-	app.get('/coords', function(req, res) {
+	router.get('/coords', function(req, res) {
 		var lon1 = req.param('lon1'); 
 		var lat1 = req.param('lat1');
 

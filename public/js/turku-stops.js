@@ -67,7 +67,7 @@ Stops.prototype.onMoveEnd = function(e) {
 
 	var bounds = self.map.getBounds();
     $.ajax({
-        url: '/coords',
+        url: '/api/coords',
         type: 'GET',
         data: {
         		'lon1': bounds.getSouthWest().lng, 

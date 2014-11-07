@@ -12,7 +12,9 @@ var mongoose   		= require('mongoose');
 // parse POST-messages with this
 app.use(bodyParser());
 
-app.use(function(req, res, next) {
+var router = express.Router();
+var staticFiles = express.Router();
+router.use(function(req, res, next) {
 	// do logging
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	console.log('Something is happening.');
@@ -20,11 +22,13 @@ app.use(function(req, res, next) {
 });
 
 //server static files from public -folder
-app.use(express.static(__dirname + '/public'));
+staticFiles.use(express.static(__dirname + '/public'));
 
 // All routes
-require('./routes.js')(app); // load our routes and pass in our app and fully configured passport
+require('./routes.js')(router); // load our routes and pass in our app and fully configured passport
 
+app.use('/api', router);
+app.use('/', staticFiles);
 
 // START THE SERVER
 // =============================================================================
