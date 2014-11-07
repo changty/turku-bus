@@ -67,7 +67,7 @@ Stops.prototype.onMoveEnd = function(e) {
 
 	var bounds = self.map.getBounds();
     $.ajax({
-        url: 'http://kulmakerroin.net:3131/coords',
+        url: '/coords',
         type: 'GET',
         data: {
         		'lon1': bounds.getSouthWest().lng, 
@@ -142,7 +142,8 @@ Stops.prototype.toggleDrawer = function() {
 	setTimeout(function() {
 		self.map.invalidateSize();
 		// change last position to last clicked bus stop ?
-		self.map.panTo(self.lastPosition, {animate: true, duration: 1.0});
+		//use panBy instead!
+		self.map.panTo(self.lastPosition, {animate: true, duration: 0.1});
 	}, 200);
 
 }

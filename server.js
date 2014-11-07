@@ -18,6 +18,10 @@ app.use(function(req, res, next) {
 	console.log('Something is happening.');
 	next(); // make sure we go to the next routes and don't stop here
 });
+
+//server static files from public -folder
+app.use(express.static(__dirname + '/public'));
+
 // All routes
 require('./routes.js')(app); // load our routes and pass in our app and fully configured passport
 
