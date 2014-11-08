@@ -137,10 +137,10 @@ Stops.prototype.onMoveEnd = function(e) {
 Stops.prototype.openStop = function(stop) {
 	var self = this;
 
-	$('.masterheader').html('<i class="fa fa-clock-o"></i> <strong> 3 min </strong> <i class="spacing-left yellow fa fa-bus"></i> 32 <span class="spacing-left"></span> kauppatorille'); 
+	$('.masterheader').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+	$('.subheader').html('<i class="fa fa-flag-o"></i> ' + stop.name + ' (' + stop.code + ')');
 
-	$('.subheader').html('<i class="fa fa-flag-o"></i> ' + stop.name);
-
+	$('.schedule').html('<li class="list-spinner"><i class="fa fa-circle-o-notch fa-spin"></i></li>');
 
 	self.expandDrawer();
 
@@ -150,7 +150,27 @@ Stops.prototype.openStop = function(stop) {
 		type: 'GET',
 
 		success: function(data) {
-			console.log(data);
+			var d = new Date; 
+			var currTime = d.getHours() + ':' + d.getMinutes();
+
+			var dayType = self.getDayType(new Date());
+			var schedule = data.timetable[dayType];
+
+			schedule = self.orderTimetable(schedule);
+
+			for(var i=0; i<schedule.length; i++) {
+				$('.schedule').append(
+			    	'<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
+				)
+
+			}
+			// remove spinner
+			$('.list-spinner').remove();
+
+
+			// set next busline 
+				$('.masterheader').html('<i class="fa fa-clock-o"></i> <strong> '+schedule[0].time.replace('.', ':') + ' ('+self.getTimeDifference(currTime, schedule[0].time)+') </strong> <i class="spacing-left yellow fa fa-bus"></i> '+schedule[0].line+' <span class="spacing-left"></span> päätepysäkki'); 
+
 		},	
 		error: function(err) {
 			console.log("Error getting stop info: ", err);
@@ -256,4 +276,96 @@ Stops.prototype.onLocationFound = function(e) {
 		self.map.setView(e.latlng, self.map.getZoom());
 		self.firstLocation = false;
 	}
+}
+
+Stops.prototype.weekday = function() {
+		var d = new Date();
+		
+		var weekday = [];
+		weekday[0]="sunnuntai";
+		weekday[1]="maanantai";
+		weekday[2]="tiistai";
+		weekday[3]="keskiviikko";
+		weekday[4]="torstai";
+		weekday[5]="perjantai";
+		weekday[6]="lauantai";
+
+		return weekday[d.getDay()];
+}
+
+Stops.prototype.getDayType = function(date) {
+
+    var weekday = date.getDay();
+    // Helpot
+    if (weekday === 0) return 'holidays'; // Sunnuntai, Pääsiäispäivä
+    if ((date.getDate() == 1) && (date.getMonth() == 0)) return'holidays'; // UudenvuodenpÃ¤ivÃ¤
+    if ((date.getDate() == 6) && (date.getMonth() == 0)) return'holidays'; // Loppiainen
+    if ((date.getDate() == 1) && (date.getMonth() == 4)) return'holidays'; // Vappu
+    if ((date.getDay() == 6) && (date.getMonth() == 5) && ((date.getDate() >= 20) && (date.getDate() <= 26))) return'holidays'; // Juhannus
+    if ((date.getDate() == 6) && (date.getMonth() == 11)) return'holidays'; // ItsenÃ¤isyyspÃ¤ivÃ¤
+    if ((date.getDate() == 25) && (date.getMonth() == 11)) return'holidays'; // JoulupÃ¤ivÃ¤
+    if ((date.getDate() == 26) && (date.getMonth() == 11)) return'holidays'; // TapaninpÃ¤ivÃ¤
+
+    var result = weekday == 6 ? 'saturdays' : 'workdays';
+    return result;
+}
+
+Stops.prototype.orderTimetable = function(schedule) {
+	var date = new Date; 
+	var timestamp = date.getHours() + ':' +date.getMinutes() + ':00';
+	var cutPoint = 0;
+
+	for(var i=0; i<schedule.length; i++) {
+
+		var compareTime = schedule[i].time.replace('.', ':'); 
+		compareTime + ':00';
+
+		if(timestamp > compareTime) {
+			cutPoint = i;
+		}
+		else {
+			break;
+		}
+	}
+
+	// at this point cutPoint is the last schedule in the past. Now 
+	// we need to reorder the schedule array.
+	cutPoint++; 
+	for(var i=0; i<cutPoint; i++) {
+		// move first item to last
+		schedule.push(schedule.shift());
+
+	}
+
+
+	return schedule;
+
+}
+
+//time1 = currTime, time3 = previous time in schedule
+Stops.prototype.getTimeDifference = function(time1, time2) {
+
+	var addExtra = false;
+
+	var startTime = time2.replace('.', ':') + ':00';
+	var endTime = time1.replace('.', ':') + ':00';
+
+	var startDate = new Date("January 1, 1970 " + startTime);
+	var endDate = new Date("January 1, 1970 " + endTime);
+	var timeDiff = Math.abs(startDate - endDate);
+
+	var hh = Math.floor(timeDiff / 1000 / 60 / 60);
+
+	timeDiff -= hh * 1000 * 60 * 60;
+	var mm = Math.floor(timeDiff / 1000 / 60);
+
+
+	var str = ""; 
+
+	if(hh > 0) {
+		str += hh +' h '; 
+	}
+	str += mm + ' min';
+
+	return str;
 }
