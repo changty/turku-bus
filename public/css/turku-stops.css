@@ -1,4 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:400,400italic,300,900,700);
+button:focus {outline:0 !important;}
 
 *,html,body{
 	-webkit-user-select: none;
@@ -47,18 +48,18 @@ strong {
 /* Responsive fontsizes */
 h1 {
 	font-size:36px;
-	font-size: 4.5vmin;
+	font-size: 4.5vh;
 }
 h2 {
 	font-size:28px;
-	font-size: 3.5vmin;
+	font-size: 3.5vh;
 	color:rgba(50,50,50,.9);
 }
 p {
 	font-size: 18px;
-	font-size: 2vmin;
+	font-size: 2vh;
 }
-
+/*
 .spacing-left {
 	margin-left: 30px;
 	margin-left: 2vw;
@@ -79,11 +80,41 @@ p {
 }
 
 .schedule li:first-child {
-	/*border-top: 1px solid rgba(50,50,50, .2);*/
+
+}*/
+
+/* 
+Generic Styling, for Desktops/Laptops 
+*/
+
+.schedule {
+/*	margin-top: 50px;
+	margin-top: 5vmin;*/
+
+}
+table { 
+  width: 100%; 
+  border-collapse: collapse; 
+}
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+  background: #eee; 
+}
+th { 
+  background: #fff; 
+  font-weight: bold; 
+}
+td, th { 
+  padding: 15px; 
+  border-bottom: 1px solid #ccc; 
+  border-top: 1px solid #ccc; 
+
+  text-align: left; 
 }
 
-.schedule li:nth-child(2n) {
-	background: rgba(50,50,50, .1);
+.spacing-left {
+	margin-left: 20px;
+	margin-left: 2vmin;
 }
 
 #map {
@@ -117,23 +148,44 @@ p {
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;  
-	overflow-y: auto;
+
 }
 
 .drawerheader {
 	background: #fff;
-	padding: 0.8vmin 5vmin;
-	position:fixed;
+	padding: 0.8vmin 3vmin;
+	padding-right: 0;
+	left:0;
 	z-index: 20;
-	border-bottom: 1px solid rgba(50,50,50, .2);
 	width: 100%;
 	display:block;
-	height: 11vh;
+	height: 12vh;
+	overflow: hidden;
 }
 
+.headertext {
+	max-width: 86vw;
+	float:left;
+	display:inline-block;
+}
+.myLoc {
+	background: url(../img/myLoc.png) center center no-repeat;
+	background-size: contain;
+	border: none;
+	float:right;
+	display:inline;
+	min-width: 14vw;
+	max-width: 14vw;
+	font-size: 8vh;
+	text-align:center;
+	border-left: 1px solid #ccc;
+}
+
+
 .drawercontent {
-	position: relative; 
-	top: 7vh;
+	display:block;
+	overflow-y: scroll;
+	height:58vh;
 }
 
 .yellow {
@@ -150,9 +202,9 @@ p {
 	bottom: 0;
 	left:0;
 	right:0px;
-	min-height: 11vh;
-	max-height: 11vh;
-	height: 11vh;
+	min-height: 12vh;
+	max-height: 12vh;
+	height: 12vh;
 	box-shadow: 0px -4px 2px rgba(50,50,50, .2);
 /*	border-top: 4px solid rgba(50,50,50,.1);
 */	background: url(../img/drawerbg.png) repeat-x top center;
@@ -191,4 +243,61 @@ p {
 
 .disconnected {
 	background: red;
+}
+
+/* Responsive stuff */
+/* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+	/* Force table to not be like tables anymore */
+	table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	.hide { display: none; }
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: 1px solid #ccc; }
+	
+	td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding: 6px;
+		font-size: 18px;
+		padding-left: 50%; 
+	}
+	
+	td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/*
+	Label the data
+	*/
+	td:nth-of-type(1):before { content: "Lähtee"; }
+	td:nth-of-type(2):before { content: "Aikaa"; }
+	td:nth-of-type(3):before { content: "Linja"; }
+	td:nth-of-type(4):before { content: "Päätepysäkki"; }
+
 }

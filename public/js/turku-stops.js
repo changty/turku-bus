@@ -1,7 +1,7 @@
 Stops = function(place, config, translation) {
 	var self = this;
 	// initialize map
-	this.map = L.map(place).setView([51.505, -0.09], 13);
+	this.map = L.map( place, {zoomControl: false} ).setView([51.505, -0.09], 13);
 	this.firstLocation = true;
 	this.cachedStops = [];
 
@@ -34,6 +34,14 @@ Stops = function(place, config, translation) {
 	this.onMoveEnd();
 
 	// events
+	
+	$('.myLoc').click(function(e) {
+		console.log("loc!");
+		e.preventDefault();
+		e.stopPropagation();
+		self.goToMyLocation();
+	});
+
 	$('.expand').click(function() {
 		self.toggleDrawer();
 	});
@@ -134,13 +142,18 @@ Stops.prototype.onMoveEnd = function(e) {
     });
 }
 
+Stops.prototype.goToMyLocation = function() {
+	var self = this; 
+	self.map.setView(self.lastPosition, self.map.getZoom());
+}
+
 Stops.prototype.openStop = function(stop) {
 	var self = this;
 
 	$('.masterheader').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 	$('.subheader').html('<i class="fa fa-flag-o"></i> ' + stop.name + ' (' + stop.code + ')');
 
-	$('.schedule').html('<li class="list-spinner"><i class="fa fa-circle-o-notch fa-spin"></i></li>');
+	$('.schedule tbody').html('<td class="list-spinner"><i class="fa fa-circle-o-notch fa-spin"></i></td>');
 
 	self.expandDrawer();
 
@@ -159,8 +172,16 @@ Stops.prototype.openStop = function(stop) {
 			schedule = self.orderTimetable(schedule);
 
 			for(var i=0; i<schedule.length; i++) {
-				$('.schedule').append(
-			    	'<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
+				$('.schedule tbody').append(
+			    	// '<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
+					
+					 '<tr>'
+	          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
+	          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
+	    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
+		          		+'<td>Päätepysäkki</td>'
+        			+'</tr>'
+
 				)
 
 			}
@@ -169,7 +190,7 @@ Stops.prototype.openStop = function(stop) {
 
 
 			// set next busline 
-				$('.masterheader').html('<i class="fa fa-clock-o"></i> <strong> '+schedule[0].time.replace('.', ':') + ' ('+self.getTimeDifference(currTime, schedule[0].time)+') </strong> <i class="spacing-left yellow fa fa-bus"></i> '+schedule[0].line+' <span class="spacing-left"></span> päätepysäkki'); 
+				$('.masterheader').html('<i class="fa fa-clock-o"></i> <strong> '+schedule[0].time.replace('.', ':') + ' <span class="hide">('+self.getTimeDifference(currTime, schedule[0].time)+')</span> </strong> <i class="spacing-left yellow fa fa-bus"></i> '+schedule[0].line+' <span class="spacing-left"></span> päätepysäkki'); 
 
 		},	
 		error: function(err) {
@@ -185,7 +206,12 @@ Stops.prototype.resizeCallback = function() {
 		self.map.invalidateSize();
 		// change last position to last clicked bus stop ?
 		//use panBy instead!
-		var lastPos = new L.LatLng(self.selectedStop.lat, self.selectedStop.lon); 
+		if(self.selectedStop) {
+			var lastPos = new L.LatLng(self.selectedStop.lat, self.selectedStop.lon); 
+		}
+		else {
+			var lastPos = self.lastPosition; 
+		}
 		self.map.panTo(lastPos, {animate: true, duration: 0.1});
 	}, 200);
 }
