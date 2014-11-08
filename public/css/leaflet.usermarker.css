@@ -43,14 +43,14 @@
 
 .leaflet-usermarker,
 .leaflet-usermarker-small {
-    width: 34px;
-    height: 34px;
-    background: url(../img/bluedot.png);
+    width: 64px;
+    height: 80px;
+    background: url(../img/myLoc.png);
     background-size: 100%;
 }
 .leaflet-usermarker-small {
-    width: 17px;
-    height: 17px;
+    width: 32px;
+    height: 40px;
 }
 
 .leaflet-usermarker i.pulse,

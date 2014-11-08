@@ -2,21 +2,22 @@
  * Leaflet.UserMarker v1.0
  * 
  * Author: Jonatan Heyman <http://heyman.info>
+ * Location icon from http://commons.wikimedia.org/wiki/Category:People_icons#mediaviewer/File:Emoji_u1f476.svg
  */
 
 (function(window) {
     var icon = L.divIcon({
         className: "leaflet-usermarker",
-        iconSize: [34, 34],
-        iconAnchor: [17, 17],
+        iconSize: [64, 80],
+        iconAnchor: [32, 71],
         popupAnchor: [0, -20],
         labelAnchor: [11, -3],
         html: ''
     });
     var iconPulsing = L.divIcon({
         className: "leaflet-usermarker",
-        iconSize: [34, 34],
-        iconAnchor: [17, 17],
+        iconSize: [64, 80],
+        iconAnchor: [32, 71],
         popupAnchor: [0, -20],
         labelAnchor: [11, -3],
         html: '<i class="pulse"></i>'
@@ -24,27 +25,27 @@
     
     var iconSmall = L.divIcon({
         className: "leaflet-usermarker-small",
-        iconSize: [17, 17],
-        iconAnchor: [9, 9],
+        iconSize: [32, 40],
+        iconAnchor: [16, 35],
         popupAnchor: [0, -10],
         labelAnchor: [3, -4],
         html: ''
     });
     var iconPulsingSmall = L.divIcon({
         className: "leaflet-usermarker-small",
-        iconSize: [17, 17],
-        iconAnchor: [9, 9],
+        iconSize: [32, 40],
+        iconAnchor: [16, 35],
         popupAnchor: [0, -10],
         labelAnchor: [3, -4],
         html: '<i class="pulse"></i>'
     });
     var circleStyle = {
         stroke: true,
-        color: "#03f",
+        color: "#27ae60",
         weight: 3,
         opacity: 0.5,
         fillOpacity: 0.15,
-        fillColor: "#03f",
+        fillColor: "#2ecc71",
         clickable: false
     };
 

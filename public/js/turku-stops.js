@@ -87,15 +87,24 @@ Stops.prototype.onMoveEnd = function(e) {
 					stop.code = item['stop_code'];
 					stop.lat = item['location'].coordinates[1];
 					stop.lon = item['location'].coordinates[0];
+					stop.circle = new L.circle(new L.LatLng(stop.lat, stop.lon), 20);
 
 					//popup
-					stop.bindPopup('<span class="lato-text"><b>' + item['stop_name'] + '</b> ('+ item['stop_code'] + ')</span>');
+					// stop.bindPopup('<span class="lato-text"><b>' + item['stop_name'] + '</b> ('+ item['stop_code'] + ')</span>');
 
 					stop.on('click', function(e) {
+						// remove circle from previously selectedstop
+						if(self.selectedStop) {
+							self.map.removeLayer(self.selectedStop.circle);
+						}
+
 						self.map.setView(new L.LatLng(stop.lat, stop.lon), 17);
 						self.openStop(stop);
-						
+
+						stop.circle.addTo(self.map);
+
 						self.selectedStop = stop;
+
 						// setLineNumbers(data['stop_id'], data['stop_name']);
 		   	// 			getCurrTime(data['stop_id']);
 
