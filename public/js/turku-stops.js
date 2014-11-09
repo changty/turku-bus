@@ -542,16 +542,21 @@ Stops.prototype.orderTimetable = function(schedule) {
 }
 
 //time1 = currTime, time3 = previous time in schedule
-Stops.prototype.getTimeDifference = function(time1, time2) {
+Stops.prototype.getTimeDifference = function(currTime, scheduleTime) {
 
-	var addExtra = false;
-
-	var startTime = time2.replace('.', ':') + ':00';
-	var endTime = time1.replace('.', ':') + ':00';
+	// current time
+	var startTime = scheduleTime.replace('.', ':') + ':00';
+	// time in future
+	var endTime = currTime.replace('.', ':') + ':00';
 
 	var startDate = new Date('1970/01/01 ' + startTime);
 	var endDate = new Date('1970/01/01 ' + endTime);
-	var timeDiff = Math.abs(startDate - endDate);
+	var timeDiff = startDate - endDate;
+
+	if(timeDiff < 0) {
+		startDate = new Date('1970/01/02 ' + startTime);
+		var timeDiff = startDate - endDate;
+	}
 
 	var hh = Math.floor(timeDiff / 1000 / 60 / 60);
 

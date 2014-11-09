@@ -225,7 +225,7 @@ td, th {
 .drawercontent {
 	display:block;
 	overflow-y: scroll;
-	height:58vh;
+	height:52vh;
 	z-index: 3;
 }
 
