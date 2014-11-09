@@ -26,7 +26,6 @@ Stops = function(place, config, translation) {
 	//Map Marker designed by Venkatesh Aiyulu from the Noun Project
 	this.mapIcon = L.icon({
     	iconUrl: 'img/busstop.png',
-
 	    iconSize:     [32, 37], // size of the icon
 	    iconAnchor:   [16, 37], // point of the icon which will correspond to marker's location
 	    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
@@ -34,7 +33,15 @@ Stops = function(place, config, translation) {
 
 	this.map.setView(new L.LatLng(60.451667, 22.266944),16);
 	this.map.locate({setView: false, maxZoom: 19, watch: true});
+
+	// resize map after drawer animation
+	var transitionEnd = transitionEndEventName();
+	$('#drawer')[0].addEventListener(transitionEnd, 
+		function() {
+			self.map.invalidateSize();
+		}, false);
 	
+	// other map functions
 	this.map.on('locationfound', this.onLocationFound.bind(this));
 	this.map.on('locationerror', this.onLocationError.bind(this));
 	this.map.on('click', this.onMapClick.bind(this));
@@ -70,10 +77,6 @@ Stops = function(place, config, translation) {
 // Load new stops
 Stops.prototype.onMoveEnd = function(e) {
 	var self = this;
-
-	// This should be done, when drawer animation has ended
-	// TODO: DO THAT! 
-	self.map.invalidateSize();
 
 	var markers = [];
 
@@ -114,11 +117,12 @@ Stops.prototype.onMoveEnd = function(e) {
 					stop.code = item['stop_code'];
 					stop.lat = item['location'].coordinates[1];
 					stop.lon = item['location'].coordinates[0];
-					stop.circle = new L.circle(new L.LatLng(stop.lat, stop.lon), 20, {
-						color: '#16a085',
+					stop.circle = new L.circle(new L.LatLng(stop.lat, stop.lon), 10, {
+						color: '#f39c12',
 						weight: '3',
-						opacity: '0.5',
-						fillColor: '#1abc9c'
+						opacity: '0.8',
+						fillOpacity: '0.8',
+						fillColor: '#f1c40f'
 					});
 
 					//popup
@@ -178,8 +182,6 @@ Stops.prototype.goToMyLocation = function() {
 	self.selectedStop.name = "My location"; 
 	self.selectedStop.code = "";
 
-	console.log(self.selectedStop);
-
 	// remove circle around previously selected stop
 	if(self.selectedStop && self.selectedStop.circle) {
 		self.map.removeLayer(self.selectedStop.circle);
@@ -192,6 +194,7 @@ Stops.prototype.goToMyLocation = function() {
 Stops.prototype.openStop = function(stop) {
 	var self = this;
 
+	$('.drawerheader').removeClass('nearMe');
 	$('.timeAndLine').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 	$('.endOfLine').html('');
 	$('.stop').html('<i class="fa fa-flag-o"></i> ' + stop.name + ' (' + stop.code + ')');
@@ -213,7 +216,6 @@ Stops.prototype.openStop = function(stop) {
 			var schedule = data.timetable[dayType];
 
 			schedule = self.orderTimetable(schedule);
- 			console.log(schedule);
 			$('.schedule thead').html(
 				      	'<tr>'
             				+ '<th>Lähtee</th>'
@@ -274,11 +276,14 @@ Stops.prototype.openStop = function(stop) {
 Stops.prototype.scheduleNearMe = function() {
 	var self = this;
 
+
 	var dayType = self.getDayType(new Date());
 	var schedule = []; 
 
 	var d = new Date; 
 	var currTime = d.getHours() + ':' + d.getMinutes();
+
+	$('.drawerheader').addClass('nearMe');
 
 	$('.timeAndLine').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 	$('.endOfLine').html('');
@@ -372,18 +377,17 @@ Stops.prototype.scheduleNearMe = function() {
 
 Stops.prototype.resizeCallback = function() {
 	var self = this;
-	setTimeout(function() {
-		self.map.invalidateSize();
-		// change last position to last clicked bus stop ?
-		//use panBy instead!
-		if(self.selectedStop) {
-			var lastPos = new L.LatLng(self.selectedStop.lat, self.selectedStop.lon); 
-		}
-		else {
-			var lastPos = self.lastPosition; 
-		}
-		self.map.panTo(lastPos, {animate: true, duration: 0.1});
-	}, 200);
+
+	// change last position to last clicked bus stop ?
+	//use panBy instead!
+	if(self.selectedStop) {
+		var lastPos = new L.LatLng(self.selectedStop.lat, self.selectedStop.lon); 
+	}
+	else {
+		var lastPos = self.lastPosition; 
+	}
+	self.map.panTo(lastPos, {animate: true, duration: 0.1});
+
 }
 
 Stops.prototype.isDrawerOpen = function() {
@@ -422,10 +426,6 @@ Stops.prototype.toggleDrawer = function() {
 	if(self.isDrawerOpen()) {
 		$('#drawer').removeClass('drawer_open');
 		$('#map').removeClass('map_collapse');
-
-		setTimeout(function() {
-			self.map.invalidateSize();
-		}, 300);
 	}
 	// expand drawer
 	else {
@@ -567,4 +567,29 @@ Stops.prototype.getTimeDifference = function(time1, time2) {
 	str += mm + ' min';
 
 	return str;
+}
+
+
+/*---- Helper stuff ----*/
+/* Random functions */
+
+// for transition end event
+function transitionEndEventName () {
+    var i,
+        undefined,
+        el = document.createElement('div'),
+        transitions = {
+            'transition':'transitionend',
+            'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
+            'MozTransition':'transitionend',
+            'WebkitTransition':'webkitTransitionEnd'
+        };
+
+    for (i in transitions) {
+        if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+            return transitions[i];
+        }
+    }
+
+    //TODO: throw 'TransitionEnd event is not supported in this browser'; 
 }

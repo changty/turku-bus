@@ -26,19 +26,20 @@ module.exports = function(router) {
 								  [parseFloat(lon2), parseFloat(lat2) ]
 								]
 				
-						} }	}, 
-
-						function(err, stops) {
-							if(err || !stops) {
-								console.log("coord error: ", err); 
-								return;
-							}
-							else {
-								// console.log(stops)
-								console.log("pysäkkien määrä: ", stops.length);
-								res.json(stops);
-							}
-					});
+						} }	}, { timetable: 0, _id: 0 } )
+						.exec(
+							function(err, stops) {
+								if(err || !stops) {
+									console.log("coord error: ", err); 
+									return;
+								}
+								else {
+									// console.log(stops)
+									console.log("pysäkkien määrä: ", stops.length);
+									// console.log(stops);
+									res.json(stops);
+								}
+						});
 
 	});
 

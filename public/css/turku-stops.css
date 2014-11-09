@@ -167,15 +167,28 @@ td, th {
 	height: 18vh;
 	overflow: hidden;
 	border-bottom: 2px solid rgba(50,50,50, .2);
+
+	-webkit-animation: busStop 1s;
+    -moz-animation: busStop 1s;
+    animation: busStop 1s;
 }
+
+.nearMe, .nearMe h2 {
+	background: #2980b9;
+	color: rgba(255,255,255, .9) !important;
+   -webkit-animation: nearMe 1s; /* Chrome, Safari, Opera */
+   -moz-animation: nearMe 1s;
+    animation: nearMe 1s;
+}
+
 
 .headertext {
 	max-width: 82vw;
 	min-width: 82vw;
 	float:left;
 	display:inline-block;
-	border-right: 1px solid #ccc;
-
+/*	border-right: 1px solid #ccc;
+*/
 }
 .myLoc {
 	background: url(../img/myLocBtn.png) center center no-repeat;
@@ -329,4 +342,35 @@ only screen and (max-width: 760px),
 	td:nth-of-type(4):before { content: "Päätepysäkki"; }
 	td:nth-of-type(5):before { content: "Pysäkiltä"; }
 
+}
+
+
+@-webkit-keyframes nearMe {
+    from {background: white; color: rgba(50,50,50, .8);}
+    to {background: #2980b9; color: rgba(255,255,255,.9);}
+}
+
+@-moz-keyframes nearMe {
+    from {background: white; color: rgba(50,50,50, .8);}
+    to {background: #2980b9; color: rgba(255,255,255,.9);}
+}
+
+@keyframes nearMe {
+    from {background: white; color: rgba(50,50,50, .8);}
+    to {background: #2980b9; color: rgba(255,255,255,.9);}
+}
+
+
+@-webkit-keyframes bustStop {
+    from {background: #2980b9; color: rgba(255,255,255,.9);}
+    to {background: white; color: rgba(50,50,50, .8);}
+
+@-moz-keyframes bustStop {
+    from {background: #2980b9; color: rgba(255,255,255,.9);}
+    to {background: white; color: rgba(50,50,50, .8);}
+}
+
+@keyframes bustStop {
+    from {background: #2980b9; color: rgba(255,255,255,.9);}
+    to {background: white; color: rgba(50,50,50, .8);}
 }
