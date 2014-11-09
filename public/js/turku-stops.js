@@ -72,6 +72,7 @@ Stops = function(place, config, translation) {
 		}
 	});
 
+
 }
 
 // Load new stops
@@ -400,10 +401,8 @@ Stops.prototype.collapseDrawer = function() {
 	if(self.isDrawerOpen()) {
 		$('#drawer').removeClass('drawer_open');
 		$('#map').removeClass('map_collapse');
+		$('#search').removeClass('hide');
 	}
-	setTimeout(function() {
-		self.map.invalidateSize();
-	}, 300);
 
 	// self.resizeCallback();
 }
@@ -414,6 +413,7 @@ Stops.prototype.expandDrawer = function() {
 	if(!self.isDrawerOpen()) {
 		$('#drawer').addClass('drawer_open');
 		$('#map').addClass('map_collapse');
+		$('#search').addClass('hide');
 	}
 
 	self.resizeCallback();
@@ -426,11 +426,14 @@ Stops.prototype.toggleDrawer = function() {
 	if(self.isDrawerOpen()) {
 		$('#drawer').removeClass('drawer_open');
 		$('#map').removeClass('map_collapse');
+		$('#search').removeClass('hide');
+
 	}
 	// expand drawer
 	else {
 		$('#drawer').addClass('drawer_open');
 		$('#map').addClass('map_collapse');
+		$('#search').addClass('hide');
 		self.resizeCallback();
 	}
 }
