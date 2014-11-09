@@ -308,7 +308,7 @@ Stops.prototype.scheduleNearMe = function() {
 			}
 
 			schedule.sort(function (a, b) {
-			  return new Date('1970/01/01 ' + a.time) - new Date('1970/01/01 ' + b.time);
+			  return (new Date('1970/01/01 ' + a.time) < new Date('1970/01/01 ' + b.time)) ? -1 : (new Date('1970/01/01 ' + a.time) > new Date('1970/01/01 ' + b.time)) ? 1 :0;
 			});	
 
 			schedule = self.orderTimetable(schedule);
