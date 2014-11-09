@@ -290,7 +290,7 @@ Stops.prototype.scheduleNearMe = function() {
 
 	$('.schedule tbody').html('<td class="list-spinner"><i class="fa fa-circle-o-notch fa-spin"></i></td>');
 
-	self.expandDrawer();
+	// self.expandDrawer();
 
 	$.ajax({
 		url: 'api/nearMe',
@@ -512,12 +512,12 @@ Stops.prototype.getDayType = function(date) {
 
 Stops.prototype.orderTimetable = function(schedule) {
 	var date = new Date();
-	var timestamp =  new Date("January 1, 1970 " + date.getHours() + ':' +date.getMinutes() + ':00');
+	var timestamp =  new Date('1970/01/01 ' + date.getHours() + ':' +date.getMinutes() + ':00');
 	var cutPoint = 0;
 
 	for(var i=0; i<schedule.length; i++) {
 
-		var compareTime = new Date("January 1, 1970 " + schedule[i].time.replace('.', ':') + ":00"); 
+		var compareTime = new Date('1970/01/01 ' + schedule[i].time.replace('.', ':') + ":00"); 
 
 
 		if(timestamp > compareTime) {
@@ -549,8 +549,8 @@ Stops.prototype.getTimeDifference = function(time1, time2) {
 	var startTime = time2.replace('.', ':') + ':00';
 	var endTime = time1.replace('.', ':') + ':00';
 
-	var startDate = new Date("January 1, 1970 " + startTime);
-	var endDate = new Date("January 1, 1970 " + endTime);
+	var startDate = new Date('1970/01/01 ' + startTime);
+	var endDate = new Date('1970/01/01 ' + endTime);
 	var timeDiff = Math.abs(startDate - endDate);
 
 	var hh = Math.floor(timeDiff / 1000 / 60 / 60);
