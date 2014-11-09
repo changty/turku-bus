@@ -58,4 +58,34 @@ module.exports = function(router) {
 			});
 	});
 
+	router.get('/nearMe', function(req, res) {
+		var lat = req.param('lat');
+		var lon = req.param('lon');
+		console.log("coords:", lon, lat);
+
+		Stop.find({ location: {
+						$near: {
+					     $geometry: {
+					        type: "Point" ,
+					        coordinates: [lon , lat ]
+					     },
+					     $maxDistance: 2000,
+					     $minDistance: 0
+					  }
+				}
+
+				})
+			.limit(5)
+			.exec(function (err, stops) {
+				if(err) {
+					console.log("error getting stops near me ", err);
+					res.send("error");
+				}
+				else {
+					console.log("amount of stops near me:", stops.length);
+					res.json(stops);
+				}
+			});
+	});
+
 };

@@ -117,6 +117,11 @@ td, th {
 	margin-left: 2vmin;
 }
 
+.spacing-right {
+	margin-right: 20px;
+	margin-right: 2vmin;
+}
+
 #map {
 	-moz-transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
@@ -159,8 +164,9 @@ td, th {
 	z-index: 20;
 	width: 100%;
 	display:block;
-	height: 12vh;
+	height: 18vh;
 	overflow: hidden;
+	border-bottom: 2px solid rgba(50,50,50, .2);
 }
 
 .headertext {
@@ -169,8 +175,9 @@ td, th {
 	display:inline-block;
 }
 .myLoc {
-	background: url(../img/myLoc.png) center center no-repeat;
+	background: url(../img/myLocBtn.png) center center no-repeat;
 	background-size: contain;
+	background-size: 80% auto;
 	border: none;
 	float:right;
 	display:inline;
@@ -179,6 +186,7 @@ td, th {
 	font-size: 8vh;
 	text-align:center;
 	border-left: 1px solid #ccc;
+	height: 100%;
 }
 
 
@@ -186,6 +194,7 @@ td, th {
 	display:block;
 	overflow-y: scroll;
 	height:58vh;
+	z-index: 3;
 }
 
 .yellow {
@@ -202,9 +211,9 @@ td, th {
 	bottom: 0;
 	left:0;
 	right:0px;
-	min-height: 12vh;
-	max-height: 12vh;
-	height: 12vh;
+	min-height: 18vh;
+	max-height: 18vh;
+	height: 18vh;
 	box-shadow: 0px -4px 2px rgba(50,50,50, .2);
 /*	border-top: 4px solid rgba(50,50,50,.1);
 */	background: url(../img/drawerbg.png) repeat-x top center;
@@ -274,7 +283,7 @@ only screen and (max-width: 760px),
 	td { 
 		/* Behave  like a "row" */
 		border: none;
-		border-bottom: 1px solid #eee; 
+		/*border-bottom: 1px solid #eee; */
 		position: relative;
 		padding: 6px;
 		font-size: 18px;
@@ -288,7 +297,7 @@ only screen and (max-width: 760px),
 		top: 6px;
 		left: 6px;
 		width: 45%; 
-		padding-right: 10px; 
+		padding-left: 20px; 
 		white-space: nowrap;
 	}
 	
@@ -299,5 +308,6 @@ only screen and (max-width: 760px),
 	td:nth-of-type(2):before { content: "Aikaa"; }
 	td:nth-of-type(3):before { content: "Linja"; }
 	td:nth-of-type(4):before { content: "Päätepysäkki"; }
+	td:nth-of-type(5):before { content: "Pysäkiltä"; }
 
 }
