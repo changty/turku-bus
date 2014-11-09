@@ -170,9 +170,12 @@ td, th {
 }
 
 .headertext {
-	max-width: 86vw;
+	max-width: 82vw;
+	min-width: 82vw;
 	float:left;
 	display:inline-block;
+	border-right: 1px solid #ccc;
+
 }
 .myLoc {
 	background: url(../img/myLocBtn.png) center center no-repeat;
@@ -185,8 +188,24 @@ td, th {
 	max-width: 14vw;
 	font-size: 8vh;
 	text-align:center;
-	border-left: 1px solid #ccc;
 	height: 100%;
+	-webkit-transition: 0.4s ease-in-out;
+    -moz-transition: 0.4s ease-in-out;
+    -o-transition: 0.4s ease-in-out;
+    transition: 0.4s ease-in-out;
+}
+
+.myLoc.active {
+    -webkit-transition: 1s ease-in-out;
+    -moz-transition: 1s ease-in-out;
+    -o-transition: 1s ease-in-out;
+    transition: 1s ease-in-out;
+
+    -webkit-transform: rotate(360deg) scale(1.2);
+    -moz-transform: rotate(360deg) scale(1.2);
+    -o-transform: rotate(360deg) scale(1.2);
+    -ms-transform: rotate(360deg) scale(1.2);
+    transform: rotate(360deg) scale(1.2);
 }
 
 

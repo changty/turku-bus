@@ -46,10 +46,13 @@ Stops = function(place, config, translation) {
 	// events
 	
 	$('.myLoc').click(function(e) {
-		console.log("loc!");
 		e.preventDefault();
 		e.stopPropagation();
 		self.goToMyLocation();
+		$(this).addClass('active');
+		setTimeout(function() {
+			$('.myLoc').removeClass('active');
+		}, 1000);
 	});
 
 	$('.expand').click(function() {
@@ -67,6 +70,10 @@ Stops = function(place, config, translation) {
 // Load new stops
 Stops.prototype.onMoveEnd = function(e) {
 	var self = this;
+
+	// This should be done, when drawer animation has ended
+	// TODO: DO THAT! 
+	self.map.invalidateSize();
 
 	var markers = [];
 
@@ -119,7 +126,7 @@ Stops.prototype.onMoveEnd = function(e) {
 
 					stop.on('click', function(e) {
 						// remove circle from previously selectedstop
-						if(self.selectedStop) {
+						if(self.selectedStop && self.selectedStop.circle) {
 							self.map.removeLayer(self.selectedStop.circle);
 						}
 
@@ -161,14 +168,20 @@ Stops.prototype.onMoveEnd = function(e) {
 
 Stops.prototype.goToMyLocation = function() {
 	var self = this; 
+	// console.log(self.selectedStop);
+	if(!self.selectedStop) { 
+		self.selectedStop = {};
+	}
 
 	self.selectedStop.lat = self.lastPosition.lat; 
 	self.selectedStop.lon = self.lastPosition.lng; 
 	self.selectedStop.name = "My location"; 
 	self.selectedStop.code = "";
 
+	console.log(self.selectedStop);
+
 	// remove circle around previously selected stop
-	if(self.selectedStop) {
+	if(self.selectedStop && self.selectedStop.circle) {
 		self.map.removeLayer(self.selectedStop.circle);
 	}
 
@@ -200,7 +213,7 @@ Stops.prototype.openStop = function(stop) {
 			var schedule = data.timetable[dayType];
 
 			schedule = self.orderTimetable(schedule);
-
+ 			console.log(schedule);
 			$('.schedule thead').html(
 				      	'<tr>'
             				+ '<th>Lähtee</th>'
@@ -210,27 +223,46 @@ Stops.prototype.openStop = function(stop) {
           				+ '</tr>'
 			);
 
-			for(var i=0; i<schedule.length; i++) {
+			if(schedule[0]) {
+				for(var i=0; i<schedule.length; i++) {
+					$('.schedule tbody').append(
+				    	// '<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
+						
+						 '<tr>'
+		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
+		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
+		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
+			          		+'<td>Päätepysäkki</td>'
+	        			+'</tr>'
+
+					);
+
+				}
+
+				// set next busline 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
+				$('.endOfLine').html('Päätepysäkki')
+			}
+
+			else {
 				$('.schedule tbody').append(
-			    	// '<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
-					
-					 '<tr>'
-	          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
-	          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
-	    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-		          		+'<td>Päätepysäkki</td>'
+					'<tr>'
+	          			+'<td><i class="fa fa-clock-o"></i> <strong></strong></td>'
+	          			+'<td>Ei busseja</td>'
+	    				+'<td><i class="fa yellow fa-bus"></i><strong></strong></td>'
+		          		+'<td>&nbsp;</td>'
         			+'</tr>'
+        		);
 
-				);
-
+        		// set next busline 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei yhteyksiä tänään</span>'); 
+				$('.endOfLine').html('')
 			}
 			// remove spinner
 			$('.list-spinner').remove();
 
 
-			// set next busline 
-			$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-			$('.endOfLine').html('Päätepysäkki')
+
 		},	
 		error: function(err) {
 			console.log("Error getting stop info: ", err);
@@ -287,27 +319,47 @@ Stops.prototype.scheduleNearMe = function() {
           				+ '</tr>'
 			);
 
-			for(var i=0; i<schedule.length; i++) {
-				$('.schedule tbody').append(					
-					 '<tr>'
-	          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
-	          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
-	    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-		          		+'<td>Päätepysäkki</td>'
-		          		+'<td><i class="fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
+			if(schedule[0]) {
+				for(var i=0; i<schedule.length; i++) {
+					$('.schedule tbody').append(					
+						 '<tr>'
+		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
+		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
+		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
+			          		+'<td>Päätepysäkki</td>'
+			          		+'<td><i class="spacing-right fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
+	        			+'</tr>'
+
+					);
+
+				}
+
+				// set next busline 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
+				$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
+				$('.endOfLine').html('Päätepysäkki')
+			}
+
+			else {
+				$('.schedule tbody').append(
+					'<tr>'
+	          			+'<td><i class="fa fa-clock-o"></i> <strong></strong></td>'
+	          			+'<td>Ei busseja</td>'
+	    				+'<td><i class="fa yellow fa-bus"></i><strong></strong></td>'
+		          		+'<td>&nbsp;</td>'
         			+'</tr>'
+        		);
 
-				);
-
+        		// set next busline 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei yhteyksiä tänään</span>'); 
+				$('.endOfLine').html('')
+			
 			}
 			// remove spinner
 			$('.list-spinner').remove();
 
 
-			// set next busline 
-			$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-			$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-			$('.endOfLine').html('Päätepysäkki')
+
 
 
 		},
@@ -344,10 +396,12 @@ Stops.prototype.collapseDrawer = function() {
 	if(self.isDrawerOpen()) {
 		$('#drawer').removeClass('drawer_open');
 		$('#map').removeClass('map_collapse');
-
 	}
+	setTimeout(function() {
+		self.map.invalidateSize();
+	}, 300);
 
-	self.resizeCallback();
+	// self.resizeCallback();
 }
 
 Stops.prototype.expandDrawer = function() {
@@ -369,14 +423,16 @@ Stops.prototype.toggleDrawer = function() {
 		$('#drawer').removeClass('drawer_open');
 		$('#map').removeClass('map_collapse');
 
+		setTimeout(function() {
+			self.map.invalidateSize();
+		}, 300);
 	}
 	// expand drawer
 	else {
 		$('#drawer').addClass('drawer_open');
 		$('#map').addClass('map_collapse');
+		self.resizeCallback();
 	}
-
-	self.resizeCallback();
 }
 
 
