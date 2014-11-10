@@ -79,7 +79,58 @@ Stops = function(place, config, translation) {
 		}
 	});
 
+	$('.search-form').submit(function(e) {
+		// prevent post/get
+		e.preventDefault();
 
+		self.search($('.searchfield').val());
+
+	});
+
+	$('.searchfield').on('focus', function(e) {
+		$('.searchresults').removeClass('hidden');
+		$(this).addClass('active');
+		$('#drawer').addClass('drawer_hidden');
+
+	});
+
+	$('.searchfield').on('blur', function(e) {
+
+	});
+}
+
+Stops.prototype.search = function(value) {
+	console.log(value);
+	$('body').append('<div class="loader"><i class="fa fa-circle-o-notch fa-spin"></i></div>');
+
+	$.ajax({
+		url: 'http://nominatim.openstreetmap.org/search',
+		type: 'GET',
+		data: {q: value, format: 'json', limit: 10, countrycodes: 'fi'},
+
+		success: function(data) {
+			console.log(data);
+			$('.loader').remove();
+			$('.searchresults').remove();
+
+			var str = '';
+			for(var i=0; i<data.length; i++) {
+				var result = data[i].display_name.replace(/value/gi, '<strong>' + value + '</strong>');
+				str += '<div class="result">' + result + ': ' + data[i].lat + ',' + data[i].lon + '</div>';
+			}
+
+			$('body').append(
+				'<div class="searchresults">'
+					+ str 
+				+'</div>'
+			);
+		},
+
+		error: function(err) {
+			console.log("error finding address: ", err);
+			$('.loader').remove();
+		}
+	});
 }
 
 // Load new stops
@@ -442,6 +493,9 @@ Stops.prototype.toggleDrawer = function() {
 
 Stops.prototype.onMapClick = function(e) {
 	var self=this;
+	$('.searchresults').addClass('hidden');
+	$('.searchfield').removeClass('active');
+	$('#drawer').removeClass('drawer_hidden');
 
 	if(self.isDrawerOpen()) {
 		self.toggleDrawer();

@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:400,400italic,300,900,700);
-button:focus {outline:0 !important;}
+button:focus, input:focus {outline:0 !important;}
 
 *,html,body{
 	-webkit-user-select: none;
@@ -58,6 +58,11 @@ h2 {
 p {
 	font-size: 18px;
 	font-size: 2vh;
+}
+
+.hidden {
+	display: none;
+	top: -200%;
 }
 /*
 .spacing-left {
@@ -122,6 +127,25 @@ td, th {
 	margin-right: 2vmin;
 }
 
+.search-form {
+	padding: 0;
+	margin:0;
+	width: 100vw;
+	display:inline;	
+	border: 0;
+	background: none;
+}
+
+.loader {
+	position: absolute;
+	width: 5vw;
+	height: 5vw;
+	top: 2.5vh;
+	left: 1vw;
+	font-size: 4vw;
+	z-index: 99999;
+}
+
 #search {
 	position: absolute;
 	top: 0;
@@ -155,7 +179,7 @@ input.searchfield {
 	height: 5vh;
 	width: 50vw;
 	margin-top: 2vh;
-	padding-left: 4vw;
+	padding-left: 2vw;
 	padding-right: 2vw;
 	font-size: 2vh;
 	-moz-transition: all 0.2s ease-in-out;
@@ -164,12 +188,14 @@ input.searchfield {
 	transition: all 0.2s ease-in-out;  
 }
 
-input.searchfield:focus {
-	margin-top: 0vh;
-	width: 100%;
+input.searchfield.active {
+	top: 0;
+	margin-top: 0;
+	width: 100vw;
 	height: 10vh;
 	background: #fff;
 	font-size: 4vh;
+	padding-left: 7vw;
 	box-shadow: 0px 2px 1px rgba(50,50,50,.2);
 	-moz-transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
@@ -177,7 +203,37 @@ input.searchfield:focus {
 	transition: all 0.2s ease-in-out;  
 }
 
+.searchbtn {
+	position:absolute;
+	border: 0;
+	padding:0;
+	border: 0;
+	height: 5vh;
+	width: 5vw;
+	background:none;
+	right: 5vw;
+	font-size: 2vh;
+}
 
+.searchresults {
+	margin:auto;
+	width: 80vw;
+	position: relative;
+	top: 12vh;
+	height: 86vh;
+	overflow-y: auto;
+	z-index: 9999;
+	opacity: 1;
+	box-shadow: 0px 2px 1px rgba(50,50,50,.2);
+}
+
+.result {
+	width: 75vw;
+	background: rgba(255,255,255, 1);
+	padding: 2vw 4vw;
+	border-bottom: 1px solid rgba(50,50,50,.1);
+	font-size: 3vh;
+}
 
 #map {
 	-moz-transition: all 0.2s ease-in-out;
@@ -194,7 +250,7 @@ input.searchfield:focus {
 	right: 0px;
 	bottom: 0px;
 	width: 100%;
-	height: 95vh;
+	height: 100vh;
 	z-index:1;
 }
 
@@ -281,7 +337,7 @@ input.searchfield:focus {
 
 .drawercontent {
 	display:block;
-	overflow-y: scroll;
+	overflow-y: auto;
 	height:52vh;
 	z-index: 3;
 }
@@ -308,6 +364,8 @@ input.searchfield:focus {
 */	background: url(../img/drawerbg.png) repeat-x top center;
 }
 
+.drawer_hidden {
+	bottom: -18vh;}
 
 .drawer_open {
 	max-height: 70vh;
@@ -430,4 +488,4 @@ only screen and (max-width: 760px),
 @keyframes bustStop {
     from {background: #2980b9; color: rgba(255,255,255,.9);}
     to {background: white; color: rgba(50,50,50, .8);}
-}
+
