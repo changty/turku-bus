@@ -534,7 +534,7 @@ Stops.prototype.orderTimetable = function(schedule) {
 
 	// at this point cutPoint is the last schedule in the past. Now 
 	// we need to reorder the schedule array.
-	cutPoint++; 
+	// cutPoint++; 
 	for(var i=0; i<cutPoint; i++) {
 		// move first item to last
 		schedule.push(schedule.shift());
