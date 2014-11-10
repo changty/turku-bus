@@ -31,6 +31,13 @@ Stops = function(place, config, translation) {
 	    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 	});
 
+	this.selectedMapIcon = L.icon({
+		iconUrl: 'img/busstopSelected.png',
+	    iconSize:     [32, 37], // size of the icon
+	    iconAnchor:   [16, 37], // point of the icon which will correspond to marker's location
+	    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+	});
+
 	this.map.setView(new L.LatLng(60.451667, 22.266944),16);
 	this.map.locate({setView: false, maxZoom: 19, watch: true});
 
@@ -133,24 +140,17 @@ Stops.prototype.onMoveEnd = function(e) {
 						// remove circle from previously selectedstop
 						if(self.selectedStop && self.selectedStop.circle) {
 							self.map.removeLayer(self.selectedStop.circle);
+							self.selectedStop.setIcon(self.mapIcon);
 						}
-
+						stop.setIcon(self.selectedMapIcon);
+						self.selectedStop = $.extend({}, stop);
 						self.map.setView(new L.LatLng(stop.lat, stop.lon), 18);
+
 						self.openStop(stop);
 
 						stop.circle.addTo(self.map);
 
-						self.selectedStop = $.extend({}, stop);
 
-						// setLineNumbers(data['stop_id'], data['stop_name']);
-		   	// 			getCurrTime(data['stop_id']);
-
-		   	// 			//Save currently clicked stop
-		   	// 			$('#timetable').attr('data-stop',data['stop_id']);
-
-			   // 			if(isOpen == 0) {
-			   // 				menuToggle();
-			   // 			}
 					});
 
 					//caching markers (stops)
@@ -186,6 +186,7 @@ Stops.prototype.goToMyLocation = function() {
 	// remove circle around previously selected stop
 	if(self.selectedStop && self.selectedStop.circle) {
 		self.map.removeLayer(self.selectedStop.circle);
+		self.selectedStop.setIcon(self.mapIcon);
 	}
 
 	self.map.setView(self.lastPosition, self.map.getZoom());
