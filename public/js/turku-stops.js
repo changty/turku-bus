@@ -106,7 +106,7 @@ Stops.prototype.search = function(value) {
 	$.ajax({
 		url: 'http://nominatim.openstreetmap.org/search',
 		type: 'GET',
-		data: {q: value, format: 'json', limit: 10, countrycodes: 'fi'},
+		data: {q: value, format: 'json', limit: 10, countrycodes: 'fi', addressdetails: 1},
 
 		success: function(data) {
 			console.log(data);
@@ -115,8 +115,12 @@ Stops.prototype.search = function(value) {
 
 			var str = '';
 			for(var i=0; i<data.length; i++) {
-				var result = data[i].display_name.replace(/value/gi, '<strong>' + value + '</strong>');
-				str += '<div class="result">' + result + ': ' + data[i].lat + ',' + data[i].lon + '</div>';
+				var result = ''
+				
+				if (data[i].address.road) { result += data[i].address.road }
+				if (data[i].address.city) { result += ', ' + data[i].address.city}
+
+				str += '<div class="result">' + result +  '<br />(debug: ' + data[i].lat + ',' + data[i].lon + ')</div>';
 			}
 
 			$('body').append(
