@@ -45,7 +45,9 @@ Stops = function(place, config, translation) {
 	var transitionEnd = transitionEndEventName();
 	$('#drawer')[0].addEventListener(transitionEnd, 
 		function() {
-			self.map.invalidateSize();
+			setTimeout(function() {
+				self.map.invalidateSize();
+			},100);
 		}, false);
 	
 	// other map functions
@@ -88,13 +90,51 @@ Stops = function(place, config, translation) {
 	});
 
 	$('.searchfield').on('focus', function(e) {
-		$('.searchresults').removeClass('hidden');
+		$('.searchresults').removeClass('hide');
 		$(this).addClass('active');
 		$('#drawer').addClass('drawer_hidden');
 
 	});
 
 	$('.searchfield').on('blur', function(e) {
+
+	});
+
+	$('body').on('click', '.result', function(e){
+		$('.searchresults').addClass('hide');
+		$('#drawer').removeClass('drawer_hidden');
+
+		self.map.setView([$(this).attr('data-lat'), $(this).attr('data-lon')], self.map.getZoom());
+	}); 
+
+	$('body').on('click', '.schedule_entry', function(e) {
+		var stop = $(this);
+		self.stopsLayer.eachLayer(function(marker) {
+		   if (marker.code == stop.attr('data-stopcode')) {
+
+		   		if(stop.attr('data-isOpen') != 'true') {
+		   			stop.attr('data-isOpen', 'true');
+		   		}
+
+		   		else {
+		   			stop.attr('data-isOpen', 'false');
+		   		}
+
+		   		// show clicked stop location 
+	            self.map.setView(marker.getLatLng(), 18);
+	            
+	            if(self.selectedStop && self.selectedStop.circle) {
+	            	self.map.removeLayer(self.selectedStop.circle);
+					self.selectedStop.setIcon(self.mapIcon);
+	            }
+
+
+	            self.selectedStop = marker;
+	            marker.circle.addTo(self.map);
+	        	marker.setIcon(self.selectedMapIcon);
+	        
+	        }
+	    });
 
 	});
 }
@@ -120,7 +160,7 @@ Stops.prototype.search = function(value) {
 				if (data[i].address.road) { result += data[i].address.road }
 				if (data[i].address.city) { result += ', ' + data[i].address.city}
 
-				str += '<div class="result">' + result +  '<br />(debug: ' + data[i].lat + ',' + data[i].lon + ')</div>';
+				str += '<div class="result" data-lat="'+ data[i].lat+'" data-lon="'+data[i].lon+'">' + result +  '<br />(debug: ' + data[i].lat + ',' + data[i].lon + ')</div>';
 			}
 
 			$('body').append(
@@ -284,10 +324,11 @@ Stops.prototype.openStop = function(stop) {
 
 			if(schedule[0]) {
 				for(var i=0; i<schedule.length; i++) {
+											console.log(schedule[i]);
+
 					$('.schedule tbody').append(
 				    	// '<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
-						
-						 '<tr>'
+						 '<tr class="schedule_entry" data-stopcode="'+schedule[i].stop_code+'">'
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
@@ -356,14 +397,22 @@ Stops.prototype.scheduleNearMe = function() {
 
 		success: function(data) {
 
+			var stopsNear = [];
+
 			for (var i=0; i<data.length; i++) {
-				console.log(data[i].stop_code);
+
+				// save coordinates, so that he location can be adjusted to show all near by stops
+				stopsNear.push(new L.LatLng(data[i].location.coordinates[1], data[i].location.coordinates[0]));
+				
 				for (var n =0; n<data[i].timetable[dayType].length; n++) {
 					data[i].timetable[dayType][n].stop_code = data[i].stop_name + ' (' + data[i].stop_code + ')';
+					data[i].timetable[dayType][n].scode = data[i].stop_code;
 				}
 				
 				schedule.push.apply(schedule, data[i].timetable[dayType]);
 			}
+
+			self.map.fitBounds(stopsNear);
 
 			schedule = schedule.sort(function (a, b) {
 				var time1 = new Date('1970/01/01 ' + a.time.replace('.', ':'));
@@ -372,7 +421,7 @@ Stops.prototype.scheduleNearMe = function() {
 				return time1 < time2 ? -1 : time1 > time2 ? 1 : 0;
 			  // return (new Date('1970/01/01 ' + a.time) < new Date('1970/01/01 ' + b.time)) ? -1 : (new Date('1970/01/01 ' + a.time) > new Date('1970/01/01 ' + b.time)) ? 1 : 0;
 			});	
-			console.log(schedule);
+			// console.log(schedule);
 			schedule = self.orderTimetable(schedule);
 
 
@@ -389,7 +438,7 @@ Stops.prototype.scheduleNearMe = function() {
 			if(schedule[0]) {
 				for(var i=0; i<schedule.length; i++) {
 					$('.schedule tbody').append(					
-						 '<tr>'
+						 '<tr class="schedule_entry" data-stopcode="'+schedule[i].scode+'">'
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
@@ -502,9 +551,13 @@ Stops.prototype.toggleDrawer = function() {
 
 Stops.prototype.onMapClick = function(e) {
 	var self=this;
-	$('.searchresults').addClass('hidden');
+
+	$('.searchresults').addClass('hide');
 	$('.searchfield').removeClass('active');
 	$('#drawer').removeClass('drawer_hidden');
+
+	$('.searchfield').blur();
+
 
 	if(self.isDrawerOpen()) {
 		self.toggleDrawer();
