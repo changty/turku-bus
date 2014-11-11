@@ -357,6 +357,7 @@ Stops.prototype.scheduleNearMe = function() {
 		success: function(data) {
 
 			for (var i=0; i<data.length; i++) {
+				console.log(data[i].stop_code);
 				for (var n =0; n<data[i].timetable[dayType].length; n++) {
 					data[i].timetable[dayType][n].stop_code = data[i].stop_name + ' (' + data[i].stop_code + ')';
 				}
@@ -364,10 +365,14 @@ Stops.prototype.scheduleNearMe = function() {
 				schedule.push.apply(schedule, data[i].timetable[dayType]);
 			}
 
-			schedule.sort(function (a, b) {
-			  return (new Date('1970/01/01 ' + a.time) < new Date('1970/01/01 ' + b.time)) ? -1 : (new Date('1970/01/01 ' + a.time) > new Date('1970/01/01 ' + b.time)) ? 1 :0;
+			schedule = schedule.sort(function (a, b) {
+				var time1 = new Date('1970/01/01 ' + a.time.replace('.', ':'));
+				var time2 = new Date('1970/01/01 ' + b.time.replace('.', ':'));
+				// return time1 - time2;
+				return time1 < time2 ? -1 : time1 > time2 ? 1 : 0;
+			  // return (new Date('1970/01/01 ' + a.time) < new Date('1970/01/01 ' + b.time)) ? -1 : (new Date('1970/01/01 ' + a.time) > new Date('1970/01/01 ' + b.time)) ? 1 : 0;
 			});	
-
+			console.log(schedule);
 			schedule = self.orderTimetable(schedule);
 
 
