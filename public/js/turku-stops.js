@@ -107,18 +107,10 @@ Stops = function(place, config, translation) {
 		self.map.setView([$(this).attr('data-lat'), $(this).attr('data-lon')], self.map.getZoom());
 	}); 
 
-	$('body').on('click', '.schedule_entry', function(e) {
+	$('body').on('click', '.showOnMap', function(e) {
 		var stop = $(this);
 		self.stopsLayer.eachLayer(function(marker) {
 		   if (marker.code == stop.attr('data-stopcode')) {
-
-		   		if(stop.attr('data-isOpen') != 'true') {
-		   			stop.attr('data-isOpen', 'true');
-		   		}
-
-		   		else {
-		   			stop.attr('data-isOpen', 'false');
-		   		}
 
 		   		// show clicked stop location 
 	            self.map.setView(marker.getLatLng(), 18);
@@ -127,7 +119,6 @@ Stops = function(place, config, translation) {
 	            	self.map.removeLayer(self.selectedStop.circle);
 					self.selectedStop.setIcon(self.mapIcon);
 	            }
-
 
 	            self.selectedStop = marker;
 	            marker.circle.addTo(self.map);
@@ -324,15 +315,19 @@ Stops.prototype.openStop = function(stop) {
 
 			if(schedule[0]) {
 				for(var i=0; i<schedule.length; i++) {
-											console.log(schedule[i]);
-
 					$('.schedule tbody').append(
-				    	// '<li><i class="fa fa-clock-o"></i> <strong> ' + schedule[i].time.replace('.', ':') +' ('+self.getTimeDifference(currTime, schedule[i].time)+') </strong> <i class="spacing-left fa yellow fa-bus"></i> ' + schedule[i].line + ' <span class="spacing-left"></span> päätepysäkki</li>'
-						 '<tr class="schedule_entry" data-stopcode="'+schedule[i].stop_code+'">'
+						 '<tr class="schedule_entry">'
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
 			          		+'<td>Päätepysäkki</td>'
+	        			+'</tr>'
+
+	        			+'<tr>'
+	        				+'<td class="contextmenu" colspan="4">'
+	        				+'<button class="contextbtn showOnMap" data-stopcode="'+stop.code+'"><i class="fa fa-crosshairs"></i></button>'
+	        				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
+	        				+'</td>'
 	        			+'</tr>'
 
 					);
@@ -341,26 +336,24 @@ Stops.prototype.openStop = function(stop) {
 
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-				$('.endOfLine').html('Päätepysäkki')
+				$('.endOfLine').html('Päätepysäkki');
+
+				$('.schedule').jExpand();
+
 			}
 
 			else {
 				$('.schedule tbody').append(
 					'<tr>'
-	          			+'<td><i class="fa fa-clock-o"></i> <strong></strong></td>'
-	          			+'<td>Ei busseja</td>'
-	    				+'<td><i class="fa yellow fa-bus"></i><strong></strong></td>'
-		          		+'<td>&nbsp;</td>'
+	          			+'<td colspan="4">Ei lähteviä busseja</td>'
         			+'</tr>'
         		);
-
         		// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei yhteyksiä tänään</span>'); 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä</span>'); 
 				$('.endOfLine').html('')
 			}
 			// remove spinner
 			$('.list-spinner').remove();
-
 
 
 		},	
@@ -385,6 +378,8 @@ Stops.prototype.scheduleNearMe = function() {
 
 	$('.timeAndLine').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 	$('.endOfLine').html('');
+	$('.stop').html('');
+
 
 	$('.schedule tbody').html('<td class="list-spinner"><i class="fa fa-circle-o-notch fa-spin"></i></td>');
 
@@ -438,12 +433,19 @@ Stops.prototype.scheduleNearMe = function() {
 			if(schedule[0]) {
 				for(var i=0; i<schedule.length; i++) {
 					$('.schedule tbody').append(					
-						 '<tr class="schedule_entry" data-stopcode="'+schedule[i].scode+'">'
+						 '<tr class="schedule_entry">'
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
 			          		+'<td>Päätepysäkki</td>'
 			          		+'<td><i class="spacing-right fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
+	        			+'</tr>'
+
+	        			+'<tr>'
+	        				+'<td class="contextmenu" colspan="5">'
+	        				+'<button class="contextbtn showOnMap" data-stopcode="'+schedule[i].scode+'"><i class="fa fa-crosshairs"></i></button>'
+	        				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
+	        				+'</td>'
 	        			+'</tr>'
 
 					);
@@ -453,31 +455,29 @@ Stops.prototype.scheduleNearMe = function() {
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
 				$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-				$('.endOfLine').html('Päätepysäkki')
+				$('.endOfLine').html('Päätepysäkki');
+
+
+				$('.schedule').jExpand();
 			}
 
 			else {
 				$('.schedule tbody').append(
 					'<tr>'
-	          			+'<td><i class="fa fa-clock-o"></i> <strong></strong></td>'
-	          			+'<td>Ei busseja</td>'
-	    				+'<td><i class="fa yellow fa-bus"></i><strong></strong></td>'
-		          		+'<td>&nbsp;</td>'
+	          			+'<td colspan="5">Ei lähteviä busseja</td>'
         			+'</tr>'
         		);
+        		$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
+				$('.endOfLine').html('');
+        	
 
         		// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei yhteyksiä tänään</span>'); 
+				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä lähettyvillä</span>'); 
 				$('.endOfLine').html('')
 			
 			}
 			// remove spinner
 			$('.list-spinner').remove();
-
-
-
-
-
 		},
 
 		error: function(err) {

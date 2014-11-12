@@ -108,8 +108,11 @@ table {
   border-collapse: collapse; 
 }
 /* Zebra striping */
-tr:nth-of-type(odd) { 
+.schedule_entry:nth-child(2n+1) { 
   background: #eee; 
+}
+.schedule_entry:nth-child(even) {
+	background: #fff !important; 
 }
 th { 
   background: #fff; 
@@ -157,6 +160,42 @@ td, th {
 	z-index: 99999;
 }
 
+.active-row, .active-row td, .active-row th, .active-row .contextmenu {
+	background: #fff !important;
+	border-bottom: 0px;
+}
+.active-row .contextmenu {
+	border-top: 0px;
+}
+
+.contextmenu {
+	text-align:center;
+	margin:auto;
+	border-top: 0px !important;
+	width: 100%;
+}
+
+.contextbtn {
+	display: inline;
+	height: 10vh;
+	width: 35vw;
+	background: #1abc9c;
+	border: 0px;
+	border-radius: 5px;
+	box-shadow: 0px 6px 0px #16a085;
+	color: #fff;
+	margin: 0px 5vw;
+	font-size: 5vh;
+}
+
+.contextbtn:active {
+	position: relative;
+	top: 4px;
+	box-shadow: 0px 2px 0px #16a085;
+
+
+}
+
 #search {
 	position: absolute;
 	top: 0;
@@ -184,6 +223,7 @@ td, th {
 input.searchfield {
 	position:relative;
 	border: 0;
+	border-radius: 0;
 	background: rgba(255,255,255,.5);
 	text-align:left;
 	margin:auto;
@@ -381,7 +421,7 @@ input.searchfield.active {
 	bottom: -18vh;}
 
 .drawer_open {
-	max-height: 70vh;
+	max-height: 70vh !important;
 	height: 70vh !important;
 	-moz-transition: all 1s ease-in-out;
 	-webkit-transition: all 1s ease-in-out;
@@ -438,9 +478,11 @@ only screen and (max-width: 760px),
 		left: -9999px;
 	}
 	
-	tr { border: 1px solid #ccc; }
-	
-	td { 
+	tr {border: 0px;}
+	tr.schedule_entry { border: 1px solid #ccc; }
+	tr.active-row {border-bottom: 0px;}
+
+	tr.schedule_entry td { 
 		/* Behave  like a "row" */
 		border: none;
 		/*border-bottom: 1px solid #eee; */
@@ -450,29 +492,52 @@ only screen and (max-width: 760px),
 		padding-left: 50%; 
 	}
 	
-	td:before { 
+	tr.schedule_entry td:before { 
 		/* Now like a table header */
 		position: absolute;
 		/* Top/left values mimic padding */
 		top: 6px;
 		left: 6px;
-		width: 45%; 
+		width: 45% !important; 
 		padding-left: 20px; 
 		white-space: nowrap;
 	}
 	
+	.contextmenu {
+		width: 100%;
+		border-top: 0;
+		border:0;
+	}
 	/*
 	Label the data
 	*/
-	td:nth-of-type(1):before { content: "Lähtee"; }
-	td:nth-of-type(2):before { content: "Aikaa"; }
-	td:nth-of-type(3):before { content: "Linja"; }
-	td:nth-of-type(4):before { content: "Päätepysäkki"; }
-	td:nth-of-type(5):before { content: "Pysäkiltä"; }
+	tr.schedule_entry td:nth-of-type(1):before { content: "Lähtee"; }
+	tr.schedule_entry td:nth-of-type(2):before { content: "Aikaa"; }
+	tr.schedule_entry td:nth-of-type(3):before { content: "Linja"; }
+	tr.schedule_entry td:nth-of-type(4):before { content: "Päätepysäkki"; }
+	tr.schedule_entry td:nth-of-type(5):before { content: "Pysäkiltä"; }
 
 }
 
+/**
+* iPad with portrait orientation. Workaround for vh units
+*/
+@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait){
+	.drawerheader, .drawer {
+		height: 185px;
+	}
 
+}
+
+/**
+* iPhone 5
+* You can also target devices with aspect ratio.
+*/
+@media screen and (device-aspect-ratio: 40/71) {
+	.drawerheader, .drawer {
+		height: 95px;
+	}
+}
 @-webkit-keyframes nearMe {
     from {background: white; color: rgba(50,50,50, .8);}
     to {background: #2980b9; color: rgba(255,255,255,.9);}
