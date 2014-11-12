@@ -336,7 +336,7 @@ Stops.prototype.openStop = function(stop) {
 
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-				$('.endOfLine').html('Päätepysäkki');
+				$('.endOfLine').html('Päätepysäkki <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, data.location.coordinates[1], data.location.coordinates[0]) *100)/100 + ' km' );
 
 				$('.schedule').jExpand();
 
@@ -348,9 +348,10 @@ Stops.prototype.openStop = function(stop) {
 	          			+'<td colspan="4">Ei lähteviä busseja</td>'
         			+'</tr>'
         		);
+
         		// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä</span>'); 
-				$('.endOfLine').html('')
+				$('.endOfLine').html('');
 			}
 			// remove spinner
 			$('.list-spinner').remove();
@@ -402,6 +403,7 @@ Stops.prototype.scheduleNearMe = function() {
 				for (var n =0; n<data[i].timetable[dayType].length; n++) {
 					data[i].timetable[dayType][n].stop_code = data[i].stop_name + ' (' + data[i].stop_code + ')';
 					data[i].timetable[dayType][n].scode = data[i].stop_code;
+					data[i].timetable[dayType][n].coordinates = data[i].location.coordinates;
 				}
 				
 				schedule.push.apply(schedule, data[i].timetable[dayType]);
@@ -451,11 +453,11 @@ Stops.prototype.scheduleNearMe = function() {
 					);
 
 				}
-
+				console.log(schedule[0]);
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
 				$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-				$('.endOfLine').html('Päätepysäkki');
+				$('.endOfLine').html('Päätepysäkki <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, schedule[0].coordinates[1], schedule[0].coordinates[0]) *100)/100 + ' km' );
 
 
 				$('.schedule').jExpand();
@@ -717,4 +719,23 @@ function transitionEndEventName () {
     }
 
     //TODO: throw 'TransitionEnd event is not supported in this browser'; 
+}
+
+// Calculate distance betwee coordinates
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
 }
