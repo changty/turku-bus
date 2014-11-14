@@ -1,1 +1,12 @@
 Readme
+
+Installation
+------------
+
+* Install node.js
+* Install npm
+
+```
+sudo npm -g install body-parser mongoose express
+
+```
