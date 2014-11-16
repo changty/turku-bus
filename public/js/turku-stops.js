@@ -320,7 +320,7 @@ Stops.prototype.openStop = function(stop) {
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-			          		+'<td>Päätepysäkki</td>'
+			          		+'<td>'+schedule[i].destination+'</td>'
 	        			+'</tr>'
 
 	        			+'<tr>'
@@ -336,7 +336,7 @@ Stops.prototype.openStop = function(stop) {
 
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-				$('.endOfLine').html('Päätepysäkki <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, data.location.coordinates[1], data.location.coordinates[0]) *100)/100 + ' km' );
+				$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, data.location.coordinates[1], data.location.coordinates[0]) *100)/100 + ' km' );
 
 				$('.schedule').jExpand();
 
@@ -439,7 +439,7 @@ Stops.prototype.scheduleNearMe = function() {
 		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
 		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
 		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-			          		+'<td>Päätepysäkki</td>'
+			          		+'<td>'+schedule[i].destination+'</td>'
 			          		+'<td><i class="spacing-right fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
 	        			+'</tr>'
 
@@ -457,7 +457,7 @@ Stops.prototype.scheduleNearMe = function() {
 				// set next busline 
 				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
 				$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-				$('.endOfLine').html('Päätepysäkki <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, schedule[0].coordinates[1], schedule[0].coordinates[0]) *100)/100 + ' km' );
+				$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, schedule[0].coordinates[1], schedule[0].coordinates[0]) *100)/100 + ' km' );
 
 
 				$('.schedule').jExpand();

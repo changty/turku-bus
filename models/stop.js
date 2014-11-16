@@ -10,9 +10,9 @@ var StopSchema = new Schema({
 		},
 
 	timetable: {
-		workdays: [ {time: String, line: String} ],
-		saturdays: [ {time: String, line: String} ],
-		holidays: [ {time: String, line: String} ]
+		workdays: [ {time: String, line: String, destination: String} ],
+		saturdays: [ {time: String, line: String, destination: String} ],
+		holidays: [ {time: String, line: String, destination: String} ]
 	}
 }); 
 
