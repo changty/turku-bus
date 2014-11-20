@@ -1,5 +1,5 @@
-@import url(http://fonts.googleapis.com/css?family=Lato:400,400italic,300,900,700);
-button:focus, input:focus {outline:0 !important;}
+/*@import url(http://fonts.googleapis.com/css?family=Lato:400,400italic,300,900,700);
+*/button:focus, input:focus {outline:0 !important;}
 
 *,html,body{
 	-webkit-user-select: none;
@@ -34,6 +34,7 @@ body {
 	top: 0;
 	bottom:0;
 	color: #666;
+	color: #333;
 	background: #fff;
 	font-size: 2em;
 	font-family: Lato;
@@ -103,13 +104,21 @@ Generic Styling, for Desktops/Laptops
 	cursor:pointer;
 }
 
+.past {
+	background: #bdc3c7 !important;
+	color: rgba(50,50,50,.1) !important;
+	border-bottom: rgba(255,255,255,.5) !important;
+}
+
 table { 
   width: 100%; 
   border-collapse: collapse; 
+  font-size: 20px;
+  font-size: 2.5vmin;
 }
 /* Zebra striping */
 .schedule_entry:nth-child(2n+1) { 
-  background: #eee; 
+  background: #ecf0f1; 
 }
 .schedule_entry:nth-child(even) {
 	background: #fff !important; 
@@ -243,7 +252,7 @@ input.searchfield.active {
 	top: 0;
 	margin-top: 0 !important;
 	width: 100%;
-	height: 70px;
+	height: 50px;	
 	background: #fff;
 	font-size: 20px;
 	padding-left: 7vw;
@@ -324,6 +333,7 @@ input.searchfield.active {
 
 .drawerheader {
 	background: #fff;
+	background: #f1c40f;
 	padding: 0.8vmin 3vmin;
 	padding-right: 0;
 	left:0;
@@ -339,9 +349,9 @@ input.searchfield.active {
     animation: busStop 1s;
 }
 
-.nearMe, .nearMe h2 {
+.nearMe, .nearMe h2, .nearMe h1 {
 	background: #2980b9;
-	color: rgba(255,255,255, .9) !important;
+	color: rgba(255,255,255, 1) !important;
    -webkit-animation: nearMe 1s; /* Chrome, Safari, Opera */
    -moz-animation: nearMe 1s;
     animation: nearMe 1s;
@@ -351,8 +361,11 @@ input.searchfield.active {
 .headertext {
 	max-width: 82vw;
 	min-width: 82vw;
+	font-size: 26px;
+	font-size: 3vmin;
 	float:left;
 	display:inline-block;
+	color: rgba(50,50,50,.8);
 /*	border-right: 1px solid #ccc;
 */
 }
@@ -393,14 +406,20 @@ input.searchfield.active {
 	overflow-y: auto;
 	height:52vh;
 	z-index: 3;
+	color: #666;
 }
 
 .yellow {
 	color: rgba(241, 196, 15,1.0);
 }
 
+.blue {
+	color: #3498db !important;
+}
+
 .dark-yellow {
 	color: rgba(243, 156, 18,1.0);
+	color: #f39c12;
 }
 
 .drawer {

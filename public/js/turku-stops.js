@@ -320,59 +320,11 @@ Stops.prototype.openStop = function(stop) {
 			var dayType = self.getDayType(new Date());
 			var schedule = data.timetable[dayType];
 
-			schedule = self.orderTimetable(schedule);
-			$('.schedule thead').html(
-				      	'<tr>'
-            				+ '<th>Lähtee</th>'
-            				+ '<th>Aikaa</th>'
-            				+ '<th>Linja</th>'
-            				+ '<th>Päätepysäkki</th>'
-          				+ '</tr>'
-			);
+			// schedule = self.orderTimetable(schedule);
 
-			if(schedule[0]) {
-				for(var i=0; i<schedule.length; i++) {
-					$('.schedule tbody').append(
-						 '<tr class="schedule_entry">'
-		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
-		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
-		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-			          		+'<td>'+schedule[i].destination+'</td>'
-	        			+'</tr>'
+			schedule = self.getRelevantSchedule(schedule, self.orderTimetable(schedule));
 
-	        			+'<tr>'
-	        				+'<td class="contextmenu" colspan="4">'
-	        				+'<button class="contextbtn showOnMap" data-stopcode="'+stop.code+'"><i class="fa fa-crosshairs"></i></button>'
-	        				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
-	        				+'</td>'
-	        			+'</tr>'
-
-					);
-
-				}
-
-				// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-				$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, data.location.coordinates[1], data.location.coordinates[0]) *100)/100 + ' km' );
-
-				$('.schedule').jExpand();
-
-			}
-
-			else {
-				$('.schedule tbody').append(
-					'<tr>'
-	          			+'<td colspan="4">Ei lähteviä busseja</td>'
-        			+'</tr>'
-        		);
-
-        		// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä</span>'); 
-				$('.endOfLine').html('');
-			}
-			// remove spinner
-			$('.list-spinner').remove();
-
+			self.updateTimeTable(schedule, false);
 
 		},	
 		error: function(err) {
@@ -435,74 +387,141 @@ Stops.prototype.scheduleNearMe = function() {
 				return time1 < time2 ? -1 : time1 > time2 ? 1 : 0;
 			  // return (new Date('1970/01/01 ' + a.time) < new Date('1970/01/01 ' + b.time)) ? -1 : (new Date('1970/01/01 ' + a.time) > new Date('1970/01/01 ' + b.time)) ? 1 : 0;
 			});	
-			// console.log(schedule);
-			schedule = self.orderTimetable(schedule);
 
+			schedule = self.getRelevantSchedule(schedule, self.orderTimetable(schedule));
+			// schedule = self.orderTimetable(schedule);
 
-			$('.schedule thead').html(
-				      	'<tr>'
-            				+ '<th>Lähtee</th>'
-            				+ '<th>Aikaa</th>'
-            				+ '<th>Linja</th>'
-            				+ '<th>Päätepysäkki</th>'
-            				+ '<th>Pysäkiltä</th>'
-          				+ '</tr>'
-			);
-
-			if(schedule[0]) {
-				for(var i=0; i<schedule.length; i++) {
-					$('.schedule tbody').append(					
-						 '<tr class="schedule_entry">'
-		          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
-		          			+'<td>'+self.getTimeDifference(currTime, schedule[i].time)+'</td>'
-		    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
-			          		+'<td>'+schedule[i].destination+'</td>'
-			          		+'<td><i class="spacing-right fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
-	        			+'</tr>'
-
-	        			+'<tr>'
-	        				+'<td class="contextmenu" colspan="5">'
-	        				+'<button class="contextbtn showOnMap" data-stopcode="'+schedule[i].scode+'"><i class="fa fa-crosshairs"></i></button>'
-	        				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
-	        				+'</td>'
-	        			+'</tr>'
-
-					);
-
-				}
-				console.log(schedule[0]);
-				// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
-				$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-				$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, schedule[0].coordinates[1], schedule[0].coordinates[0]) *100)/100 + ' km' );
-
-
-				$('.schedule').jExpand();
-			}
-
-			else {
-				$('.schedule tbody').append(
-					'<tr>'
-	          			+'<td colspan="5">Ei lähteviä busseja</td>'
-        			+'</tr>'
-        		);
-        		$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
-				$('.endOfLine').html('');
-        	
-
-        		// set next busline 
-				$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä lähettyvillä</span>'); 
-				$('.endOfLine').html('')
-			
-			}
-			// remove spinner
-			$('.list-spinner').remove();
+			self.updateTimeTable(schedule, true);
 		},
 
 		error: function(err) {
 			console.log("Error getting schedule close by: ", err);
 		}
 	});
+}
+
+Stops.prototype.updateTimeTable = function(schedule, nearMe) {
+	var self = this;
+
+	var d = new Date; 
+	var currTime = d.getHours() + ':' + d.getMinutes();
+
+	if(nearMe) {
+		$('.schedule thead').html(
+			      	'<tr>'
+	    				+ '<th>Lähtee</th>'
+	    				+ '<th>Aikaa</th>'
+	    				+ '<th>Linja</th>'
+	    				+ '<th>Päätepysäkki</th>'
+	    				+ '<th>Pysäkiltä</th>'
+	  				+ '</tr>'
+		);
+	}
+
+	else {
+		$('.schedule thead').html(
+			      	'<tr>'
+	    				+ '<th>Lähtee</th>'
+	    				+ '<th>Aikaa</th>'
+	    				+ '<th>Linja</th>'
+	    				+ '<th>Päätepysäkki</th>'
+	  				+ '</tr>'
+		);
+	}
+
+	if(schedule[0]) {
+		for(var i=0; i<schedule.length; i++) {
+
+			var past = i<2 ? "past":""; 			
+			var timeToWait = self.getTimeDifference(currTime, schedule[i].time, past);
+
+
+			if(nearMe) {
+
+				$('.schedule tbody').append(					
+					 '<tr class="schedule_entry ' + past +'">'
+	          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
+	          			+'<td>'+timeToWait+'</td>'
+	    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
+		          		+'<td>'+schedule[i].destination+'</td>'
+		          		+'<td><i class="spacing-right fa fa-flag-o"></i>' +schedule[i].stop_code+'</td>'
+	    			+'</tr>'
+
+	    			+'<tr>'
+	    				+'<td class="contextmenu" colspan="5">'
+	    				+'<button class="contextbtn showOnMap" data-stopcode="'+schedule[i].scode+'"><i class="fa fa-crosshairs"></i></button>'
+	    				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
+	    				+'</td>'
+	    			+'</tr>'
+				);
+
+			}
+
+			else {
+				$('.schedule tbody').append(					
+					 '<tr class="schedule_entry ' + past +'">'
+	          			+'<td><i class="fa fa-clock-o"></i> <strong> '+schedule[i].time.replace('.', ':') +' </strong></td>'
+	          			+'<td>'+timeToWait+'</td>'
+	    				+'<td><i class="fa yellow fa-bus"></i><strong> '+ schedule[i].line +'</strong></td>'
+		          		+'<td>'+schedule[i].destination+'</td>'
+	    			+'</tr>'
+
+	    			+'<tr>'
+	    				+'<td class="contextmenu" colspan="5">'
+	    				+'<button class="contextbtn showOnMap" data-stopcode="'+schedule[i].scode+'"><i class="fa fa-crosshairs"></i></button>'
+	    				+'<button class="contextbtn addAlarm"><i class="fa fa-volume-up"></i></button>'
+	    				+'</td>'
+	    			+'</tr>'
+				);
+			}
+
+		}
+
+		// set next busline 
+		$('.timeAndLine').html('<i class="fa yellow fa-clock-o"> </i> <span class="spacing-right"><strong> '+schedule[0].time.replace('.', ':') + '</span> <span class="spacing-right">'+self.getTimeDifference(currTime, schedule[0].time)+'</span> </strong> <i class="spacing-left yellow fa fa-bus"></i><strong> '+schedule[0].line+' </strong>'); 
+		$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
+		
+
+		// FIX THIS!
+		// if(nearMe) {
+		// 	$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, schedule[0].coordinates[1], schedule[0].coordinates[0]) *100)/100 + ' km' );
+		// }
+		// else {
+		// 	$('.endOfLine').html(schedule[0].destination + ' <i class="spacing-left fa fa-arrows-h"></i> ' + Math.round(getDistanceFromLatLonInKm(self.lastPosition.lat, self.lastPosition.lng, data.location.coordinates[1], data.location.coordinates[0]) *100)/100 + ' km' );
+		// }
+
+		$('.schedule').jExpand();
+	}
+
+	else {
+
+		if(nearMe) {
+			$('.schedule tbody').append(
+				'<tr>'
+	      			+'<td colspan="5">Ei lähteviä busseja</td>'
+				+'</tr>'
+			);			
+		}
+
+		else {
+			$('.schedule tbody').append(
+				'<tr>'
+	      			+'<td colspan="4">Ei lähteviä busseja</td>'
+				+'</tr>'
+			);
+		}
+		$('.stop').html('<i class="fa fa-flag-o"> </i> '+ schedule[0].stop_code);
+		$('.endOfLine').html('');
+	
+
+		// set next busline 
+		$('.timeAndLine').html('<i class="fa fa-clock-o"> </i> <span class="spacing-right"><strong>Ei lähteviä yhteyksiä lähettyvillä</span>'); 
+		$('.endOfLine').html('')
+	
+	}
+	// remove spinner
+	$('.list-spinner').remove();
+
 }
 
 Stops.prototype.resizeCallback = function() {
@@ -649,6 +668,47 @@ Stops.prototype.getDayType = function(date) {
     return result;
 }	
 
+Stops.prototype.getRelevantSchedule = function(schedule, cutPoint) {
+
+	// take five next from schedule
+	var limited = schedule.splice(cutPoint, 5);
+
+	var diff = limited.length - 5; 
+	var n = cutPoint + 5;
+
+	for(var i=0; i<diff; i++) {
+		if(schedule[n]) {
+			limited.unshift(schedule[n]);
+		}
+		else {
+			n = -1;
+		}
+
+		n++;
+	}
+
+	console.log("length", limited.length);
+
+	// remember last to busses
+	if(cutPoint === 0) {
+		limited.unshift(schedule[schedule.length -1]);
+		limited.unshift(schedule[schedule.length -2]);
+
+	}
+	else if (cutPoint === 1) {
+		limited.unshift(schedule[cutPoint -1]);
+		limited.unshift(schedule[schedule.length -1]);
+	}
+	else {
+		limited.unshift(schedule[cutPoint -1]);
+		limited.unshift(schedule[cutPoint -2]);
+	}
+
+	console.log("length", limited.length);
+
+	return limited;
+}
+
 Stops.prototype.orderTimetable = function(schedule) {
 	var date = new Date();
 	var timestamp =  new Date('1970/01/01 ' + date.getHours() + ':' +date.getMinutes() + ':00');
@@ -670,18 +730,20 @@ Stops.prototype.orderTimetable = function(schedule) {
 	// at this point cutPoint is the last schedule in the past. Now 
 	// we need to reorder the schedule array.
 	cutPoint++; 
-	for(var i=0; i<cutPoint; i++) {
-		// move first item to last
-		schedule.push(schedule.shift());
-	}
+	// for(var i=0; i<cutPoint; i++) {
+	// 	// move first item to last
+	// 	schedule.push(schedule.shift());
+	// }
 
 
-	return schedule;
+	// return schedule;
+	// changed to handle only the position in which the current schedule starts
+	return cutPoint;
 
 }
 
 //time1 = currTime, time3 = previous time in schedule
-Stops.prototype.getTimeDifference = function(currTime, scheduleTime) {
+Stops.prototype.getTimeDifference = function(currTime, scheduleTime, past) {
 
 	// current time
 	var startTime = scheduleTime.replace('.', ':') + ':00';
@@ -692,16 +754,32 @@ Stops.prototype.getTimeDifference = function(currTime, scheduleTime) {
 	var endDate = new Date('1970/01/01 ' + endTime);
 	var timeDiff = startDate - endDate;
 
-	if(timeDiff < 0) {
+	if(timeDiff < 0 && !past || past.legngth === 0) {
 		startDate = new Date('1970/01/02 ' + startTime);
 		var timeDiff = startDate - endDate;
+	}
+
+	// time in past
+	else if(past && past.length) {
+		var hh = Math.floor(timeDiff / 1000 / 60 / 60) + 1;
+		timeDiff += hh * 1000 * 60 * 60;
+		var mm = Math.floor(timeDiff / 1000 / 60);
+
+		var str = ""; 
+
+		if(hh > 0) {
+			str += hh +' h '; 
+		}
+		str += mm + ' min';
+
+		return str;
 	}
 
 	var hh = Math.floor(timeDiff / 1000 / 60 / 60);
 
 	timeDiff -= hh * 1000 * 60 * 60;
-	var mm = Math.floor(timeDiff / 1000 / 60);
 
+	var mm = Math.floor(timeDiff / 1000 / 60);
 
 	var str = ""; 
 
@@ -709,7 +787,6 @@ Stops.prototype.getTimeDifference = function(currTime, scheduleTime) {
 		str += hh +' h '; 
 	}
 	str += mm + ' min';
-
 	return str;
 }
 
