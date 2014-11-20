@@ -128,6 +128,23 @@ Stops = function(place, config, translation) {
 	    });
 
 	});
+
+
+	$('body').append('<a href="#" class="rest"> testi </a>');
+	$('body').on('click', '.rest', function(e) {
+		$.ajax({
+			url: '84.250.10.181:3132',
+			type: 'GET',
+			data: {},
+
+			success: function(data) {
+				console.log(data);
+			},
+			error: function(err) {
+				console.log(err);
+			}	
+		})
+	});
 }
 
 Stops.prototype.search = function(value) {
