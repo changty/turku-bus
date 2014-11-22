@@ -107,6 +107,12 @@ module.exports = function(router) {
 
     router.get('/plan', function(req, res) {
 		
+		/* call example:
+		  
+		 http://localhost:3131/api/plan?lat1=60.45180028073331&lon1=22.26104736328125&mode=CAR&lat2=60.16884161373975&lon2=24.95819091796875
+		 
+		 */
+		
 		// Go through the parameters, add is something is missing.
 		
 		// TODO check that the ingoing data is valid.
@@ -150,7 +156,9 @@ module.exports = function(router) {
 		var __callSuccess = function (error, response, body) {
 			if (!error && response.statusCode === 200) {
 				console.log('Response: ', body);
-				res.json(body);
+				res.charset = 'utf-8';
+				res.type('application/json');
+				res.send(body);
 			}
 			else res.send('plan error');
 		};
